@@ -1,71 +1,52 @@
-# Scripts
+# APIQIK Claude Code 安装脚本
 
-A public collection of shell scripts maintained by [yqwd-dimleap](https://github.com/yqwd-dimleap) for common operational and development tasks. This repository provides a central place to discover, review, and download scripts.
+这组脚本用于为 Claude Code 配置 APIQIK Anthropic 兼容网关。
 
-## Project Status
+## 一键运行
 
-The repository is being initialized. No scripts are available yet. Usage instructions and requirements will be documented as scripts are added.
+国内站：
 
-## Getting Started
-
-### Clone the Repository
-
-```sh
-git clone https://github.com/yqwd-dimleap/scripts.git
-cd scripts
+```bash
+bash <(curl -fsSL https://raw.githubusercontent.com/your-org/your-repo/main/install-claude-code-apiqik-cn.sh)
 ```
 
-### Download an Individual Script
+海外站：
 
-Once scripts are available, download them directly from GitHub. Replace `path/to/script.sh` with the actual repository path:
-
-```sh
-curl --fail --show-error --location \
-  https://raw.githubusercontent.com/yqwd-dimleap/scripts/main/path/to/script.sh \
-  --output script.sh
+```bash
+bash <(curl -fsSL https://raw.githubusercontent.com/your-org/your-repo/main/install-claude-code-apiqik-global.sh)
 ```
 
-For reproducible downloads, replace `main` in the URL with a full commit SHA. Downloads from `main` reflect the latest version on that branch and may change over time.
+脚本会要求用户填写 APIQIK Base URL，不再预设服务地址。
 
-### Run a Script
+脚本会自动将请求发送到对应地址的 `/v1/messages`。
 
-Read the script and its documentation before running it. Check its supported operating systems, required tools, configuration, and permissions.
+## 配置流程
 
-For a script with a valid shebang specifying its interpreter:
+1. 选择 `1. 配置或更新 APIQIK`。
+2. 输入 APIQIK Base URL。
+3. 输入模型名；留空则保留 Claude Code 默认模型。
+4. 交互式输入 API Key。
+5. 重启 Claude Code 后执行 `/status` 检查配置。
 
-```sh
-chmod +x script.sh
-./script.sh
+配置文件为 `~/.claude/settings.json`。已有文件会先备份到
+`~/.claude/backup-apiqik/`，脚本只修改 `env` 节点，不覆盖其他配置。
+
+## 测试环境
+
+测试连接时同样需要在交互提示中填写对应的 Base URL。
+
+## 本地运行
+
+克隆仓库后，可以直接运行任一入口脚本。入口脚本会优先调用同目录下的共享实现，不依赖网络下载：
+
+```bash
+./install-claude-code-apiqik-cn.sh
+./install-claude-code-apiqik-global.sh
 ```
 
-Use the interpreter specified by each script; not every shell script is compatible with `sh` or `bash`. Run with elevated privileges only when explicitly required by the script's documentation.
+## 安全说明
 
-## Script Documentation
-
-Each script should document:
-
-- Its purpose and expected behavior.
-- Supported operating systems and required dependencies.
-- Command-line arguments, environment variables, and usage examples.
-- Required permissions and any changes it makes to files or system settings.
-
-## Contributing
-
-Issues and pull requests are welcome.
-
-1. Open an issue to discuss substantial additions or changes.
-2. Create a branch for your work.
-3. Keep scripts focused, use descriptive filenames, and declare the intended interpreter with a shebang.
-4. Include usage instructions and document dependencies and side effects.
-5. Check shell syntax, run [ShellCheck](https://www.shellcheck.net/) where supported, and test in an appropriate environment.
-6. Submit a pull request describing the change and how it was tested.
-
-Keep documentation and code comments in English. Do not commit credentials, secrets, or company-internal information.
-
-## Support
-
-Use [GitHub Issues](https://github.com/yqwd-dimleap/scripts/issues) to report bugs or request scripts. Include the script name, operating system, shell version, steps to reproduce, and relevant output. Remove sensitive information from logs before sharing them.
-
-## License
-
-This project is licensed under the Apache License, Version 2.0. See [LICENSE](LICENSE) for the full license text.
+- 仓库不包含 API Key、个人身份信息、日志、配置备份或测试凭证。
+- API Key 只通过隐藏输入读取，不放入 URL、命令行参数或日志。
+- API Key 仅写入本机 `settings.json`，文件权限设置为 `600`。
+- 测试地址使用文档中的占位域名，发布脚本不绑定内部环境。
