@@ -68,4 +68,4 @@ Use [GitHub Issues](https://github.com/yqwd-dimleap/scripts/issues) to report bu
 
 ## License
 
-A license has not yet been added to this repository. Public availability alone does not grant permission to use, modify, or redistribute its contents. License terms will be published in a `LICENSE` file when available.
+This project is licensed under the Apache License, Version 2.0. See [LICENSE](LICENSE) for the full license text.
