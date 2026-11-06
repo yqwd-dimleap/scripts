@@ -7,14 +7,28 @@
 国内站：
 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/yqwd-dimleap/scripts/main/install-claude-code-apiqik-cn.sh)
+(
+  script_file="$(mktemp)" || exit 1
+  trap 'rm -f "$script_file"' EXIT
+  curl -fsSL --output "$script_file" \
+    "https://raw.githubusercontent.com/yqwd-dimleap/scripts/main/install-claude-code-apiqik-cn.sh" &&
+    bash "$script_file"
+)
 ```
 
 海外站：
 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/yqwd-dimleap/scripts/main/install-claude-code-apiqik-global.sh)
+(
+  script_file="$(mktemp)" || exit 1
+  trap 'rm -f "$script_file"' EXIT
+  curl -fsSL --output "$script_file" \
+    "https://raw.githubusercontent.com/yqwd-dimleap/scripts/main/install-claude-code-apiqik-global.sh" &&
+    bash "$script_file"
+)
 ```
+
+命令会先下载脚本，确认下载成功后才执行；下载失败时会返回非零状态。
 
 脚本会要求用户填写 APIQIK Base URL，不再预设服务地址。
 
