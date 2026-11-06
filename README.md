@@ -1,71 +1,66 @@
-# Scripts
+# APIQIK Claude Code Setup Scripts
 
-A public collection of shell scripts maintained by [yqwd-dimleap](https://github.com/yqwd-dimleap) for common operational and development tasks. This repository provides a central place to discover, review, and download scripts.
+These scripts configure the APIQIK Anthropic-compatible gateway for Claude Code.
 
-## Project Status
+## One-click installation
 
-The repository is being initialized. No scripts are available yet. Usage instructions and requirements will be documented as scripts are added.
+China endpoint:
 
-## Getting Started
-
-### Clone the Repository
-
-```sh
-git clone https://github.com/yqwd-dimleap/scripts.git
-cd scripts
+```bash
+(
+  script_file="$(mktemp)" || exit 1
+  trap 'rm -f "$script_file"' EXIT
+  curl -fsSL --output "$script_file" \
+    "https://raw.githubusercontent.com/yqwd-dimleap/scripts/main/install-claude-code-apiqik-cn.sh" &&
+    bash "$script_file"
+)
 ```
 
-### Download an Individual Script
+Global endpoint:
 
-Once scripts are available, download them directly from GitHub. Replace `path/to/script.sh` with the actual repository path:
-
-```sh
-curl --fail --show-error --location \
-  https://raw.githubusercontent.com/yqwd-dimleap/scripts/main/path/to/script.sh \
-  --output script.sh
+```bash
+(
+  script_file="$(mktemp)" || exit 1
+  trap 'rm -f "$script_file"' EXIT
+  curl -fsSL --output "$script_file" \
+    "https://raw.githubusercontent.com/yqwd-dimleap/scripts/main/install-claude-code-apiqik-global.sh" &&
+    bash "$script_file"
+)
 ```
 
-For reproducible downloads, replace `main` in the URL with a full commit SHA. Downloads from `main` reflect the latest version on that branch and may change over time.
+The command downloads the script before execution and returns a non-zero status if the download fails.
 
-### Run a Script
+The script prompts for an APIQIK Base URL and does not use a predefined service address.
 
-Read the script and its documentation before running it. Check its supported operating systems, required tools, configuration, and permissions.
+Requests are sent to the `/v1/messages` path of the configured endpoint.
 
-For a script with a valid shebang specifying its interpreter:
+## Configuration flow
 
-```sh
-chmod +x script.sh
-./script.sh
+1. Select `1. Configure or update APIQIK`.
+2. Enter the APIQIK Base URL.
+3. Enter the model name; leave it empty to keep the Claude Code default model.
+4. Enter the API key when prompted.
+5. Restart Claude Code and run `/status` to verify the configuration.
+
+The configuration file is `~/.claude/settings.json`. Existing files are backed up to
+`~/.claude/backup-apiqik/`; the script only updates the `env` node and preserves other settings.
+
+## Test environment
+
+Enter the appropriate Base URL when testing a connection.
+
+## Local usage
+
+After cloning the repository, run either entry script directly. The entry scripts prefer the shared implementation in the same directory and do not require a network download:
+
+```bash
+./install-claude-code-apiqik-cn.sh
+./install-claude-code-apiqik-global.sh
 ```
 
-Use the interpreter specified by each script; not every shell script is compatible with `sh` or `bash`. Run with elevated privileges only when explicitly required by the script's documentation.
+## Security notes
 
-## Script Documentation
-
-Each script should document:
-
-- Its purpose and expected behavior.
-- Supported operating systems and required dependencies.
-- Command-line arguments, environment variables, and usage examples.
-- Required permissions and any changes it makes to files or system settings.
-
-## Contributing
-
-Issues and pull requests are welcome.
-
-1. Open an issue to discuss substantial additions or changes.
-2. Create a branch for your work.
-3. Keep scripts focused, use descriptive filenames, and declare the intended interpreter with a shebang.
-4. Include usage instructions and document dependencies and side effects.
-5. Check shell syntax, run [ShellCheck](https://www.shellcheck.net/) where supported, and test in an appropriate environment.
-6. Submit a pull request describing the change and how it was tested.
-
-Keep documentation and code comments in English. Do not commit credentials, secrets, or company-internal information.
-
-## Support
-
-Use [GitHub Issues](https://github.com/yqwd-dimleap/scripts/issues) to report bugs or request scripts. Include the script name, operating system, shell version, steps to reproduce, and relevant output. Remove sensitive information from logs before sharing them.
-
-## License
-
-This project is licensed under the Apache License, Version 2.0. See [LICENSE](LICENSE) for the full license text.
+- The repository does not contain API keys, personal information, logs, configuration backups, or test credentials.
+- API keys are read without echoing them and are never placed in URLs, command-line arguments, or logs.
+- API keys are written only to the local `settings.json`, which is assigned `600` permissions.
+- Test endpoints are entered interactively; the published scripts do not bind to an internal environment.
