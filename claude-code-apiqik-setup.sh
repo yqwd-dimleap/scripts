@@ -45,7 +45,7 @@ write_settings() {
   local base_url="$1"
   local model="$2"
   local api_key
-  read -r -s -p 'Enter the APIQIK API key: ' api_key
+  read -r -s -p 'Enter the  API key: ' api_key
   printf '\n'
   [[ -n "$api_key" ]] || fail 'API key cannot be empty.'
 
@@ -107,12 +107,12 @@ PY
 
 test_connection() {
   local base_url model api_key
-  read -r -p 'APIQIK Base URL: ' base_url
+  read -r -p 'Base URL: ' base_url
   [[ -n "$base_url" ]] || fail 'Base URL cannot be empty.'
   base_url="$(normalize_base_url "$base_url")"
   read -r -p 'Test model name: ' model
   [[ -n "$model" ]] || fail 'Test model name cannot be empty.'
-  read -r -s -p 'Enter the APIQIK API key: ' api_key
+  read -r -s -p 'Enter the  API key: ' api_key
   printf '\n'
   [[ -n "$api_key" ]] || fail 'API key cannot be empty.'
 
@@ -165,7 +165,7 @@ restore_settings() {
 
 configure() {
   local base_url model
-  read -r -p 'APIQIK Base URL: ' base_url
+  read -r -p 'Base URL: ' base_url
   [[ -n "$base_url" ]] || fail 'Base URL cannot be empty.'
   base_url="$(normalize_base_url "$base_url")"
 
@@ -180,7 +180,7 @@ main() {
   mkdir -p "$CLAUDE_DIR"
 
   while true; do
-    printf '\nAPIQIK Claude Code configurator\n'
+    printf '\nClaude Code configurator\n'
     printf '  1. Configure or update APIQIK\n'
     printf '  2. Test APIQIK connection\n'
     printf '  9. Restore the latest configuration backup\n'
