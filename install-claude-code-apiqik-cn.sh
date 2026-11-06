@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
 
-SETUP_SCRIPT_URL="${APIQIK_SETUP_SCRIPT_URL:-https://raw.githubusercontent.com/your-org/your-repo/main/claude-code-apiqik-setup.sh}"
+SETUP_SCRIPT_URL="${APIQIK_SETUP_SCRIPT_URL:-https://raw.githubusercontent.com/yqwd-dimleap/scripts/main/claude-code-apiqik-setup.sh}"
 
 run_setup() {
   local script_dir=""
@@ -14,7 +14,21 @@ run_setup() {
     return
   fi
 
-  bash <(curl -fsSL "$SETUP_SCRIPT_URL")
+  local temporary_script status
+  temporary_script="$(mktemp "${TMPDIR:-/tmp}/apiqik-setup.XXXXXX")"
+  if ! curl -fsSL --output "$temporary_script" "$SETUP_SCRIPT_URL"; then
+    rm -f "$temporary_script"
+    printf '[APIQIK] 错误：无法下载配置脚本：%s\n' "$SETUP_SCRIPT_URL" >&2
+    return 1
+  fi
+
+  if bash "$temporary_script"; then
+    status=0
+  else
+    status=$?
+  fi
+  rm -f "$temporary_script"
+  return "$status"
 }
 
 run_setup "$@"

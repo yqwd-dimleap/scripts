@@ -7,13 +7,13 @@
 国内站：
 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/your-org/your-repo/main/install-claude-code-apiqik-cn.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/yqwd-dimleap/scripts/main/install-claude-code-apiqik-cn.sh)
 ```
 
 海外站：
 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/your-org/your-repo/main/install-claude-code-apiqik-global.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/yqwd-dimleap/scripts/main/install-claude-code-apiqik-global.sh)
 ```
 
 脚本会要求用户填写 APIQIK Base URL，不再预设服务地址。
@@ -49,4 +49,4 @@ bash <(curl -fsSL https://raw.githubusercontent.com/your-org/your-repo/main/inst
 - 仓库不包含 API Key、个人身份信息、日志、配置备份或测试凭证。
 - API Key 只通过隐藏输入读取，不放入 URL、命令行参数或日志。
 - API Key 仅写入本机 `settings.json`，文件权限设置为 `600`。
-- 测试地址使用文档中的占位域名，发布脚本不绑定内部环境。
+- 测试地址由用户交互输入，发布脚本不绑定内部环境。
