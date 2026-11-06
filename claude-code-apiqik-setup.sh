@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
 
-# Claude Code 通过 settings.json 的 env 节点读取网关地址和凭证。
+# Claude Code reads the gateway URL and credentials from the env node in settings.json.
 CLAUDE_DIR="${CLAUDE_CONFIG_DIR:-$HOME/.claude}"
 SETTINGS_FILE="$CLAUDE_DIR/settings.json"
 BACKUP_DIR="$CLAUDE_DIR/backup-apiqik"
@@ -11,12 +11,12 @@ log() {
 }
 
 fail() {
-  printf '[APIQIK] 错误：%s\n' "$1" >&2
+  printf '[APIQIK] Error: %s\n' "$1" >&2
   exit 1
 }
 
 require_python() {
-  command -v python3 >/dev/null 2>&1 || fail '需要 Python 3 来安全合并和校验 settings.json。'
+  command -v python3 >/dev/null 2>&1 || fail 'Python 3 is required to safely merge and validate settings.json.'
 }
 
 normalize_base_url() {
@@ -24,9 +24,9 @@ normalize_base_url() {
   value="${value%/}"
   if [[ "$value" == */v1 ]]; then
     value="${value%/v1}"
-    log '已移除 Base URL 末尾的 /v1，避免 Claude Code 请求路径重复。'
+    log 'Removed the trailing /v1 from the Base URL to avoid duplicating the request path.'
   fi
-  [[ "$value" =~ ^https?://[^[:space:]]+$ ]] || fail 'Base URL 必须是 http:// 或 https:// 地址。'
+  [[ "$value" =~ ^https?://[^[:space:]]+$ ]] || fail 'Base URL must use an http:// or https:// address.'
   printf '%s' "$value"
 }
 
@@ -38,16 +38,16 @@ backup_settings() {
   backup_file="$BACKUP_DIR/settings.json.$timestamp"
   mkdir -p "$BACKUP_DIR"
   cp "$SETTINGS_FILE" "$backup_file"
-  log "已备份现有配置：$backup_file"
+  log "Backed up the existing configuration: $backup_file"
 }
 
 write_settings() {
   local base_url="$1"
   local model="$2"
   local api_key
-  read -r -s -p '请输入 APIQIK API Key：' api_key
+  read -r -s -p 'Enter the APIQIK API key: ' api_key
   printf '\n'
-  [[ -n "$api_key" ]] || fail 'API Key 不能为空。'
+  [[ -n "$api_key" ]] || fail 'API key cannot be empty.'
 
   mkdir -p "$CLAUDE_DIR"
   chmod 700 "$CLAUDE_DIR"
@@ -63,20 +63,20 @@ settings_path, base_url, model = sys.argv[1:]
 api_key = os.environ.get("APIQIK_SETUP_KEY", "")
 
 if not api_key:
-    raise SystemExit("API Key 不能为空")
+    raise SystemExit("API key cannot be empty")
 
 settings = {}
 if os.path.exists(settings_path):
     with open(settings_path, encoding="utf-8") as source:
         settings = json.load(source)
 if not isinstance(settings, dict):
-    raise SystemExit("settings.json 顶层必须是 JSON 对象")
+    raise SystemExit("settings.json must contain a top-level JSON object")
 
 env = settings.get("env")
 if env is None:
     env = {}
 elif not isinstance(env, dict):
-    raise SystemExit("settings.json 的 env 必须是 JSON 对象")
+    raise SystemExit("settings.json env must be a JSON object")
 
 env["ANTHROPIC_BASE_URL"] = base_url
 env["ANTHROPIC_AUTH_TOKEN"] = api_key
@@ -102,19 +102,19 @@ PY
 
   chmod 600 "$SETTINGS_FILE"
   unset api_key
-  log "Claude Code 配置完成：$SETTINGS_FILE"
+  log "Claude Code configuration completed: $SETTINGS_FILE"
 }
 
 test_connection() {
   local base_url model api_key
-  read -r -p 'APIQIK Base URL：' base_url
-  [[ -n "$base_url" ]] || fail 'Base URL 不能为空。'
+  read -r -p 'APIQIK Base URL: ' base_url
+  [[ -n "$base_url" ]] || fail 'Base URL cannot be empty.'
   base_url="$(normalize_base_url "$base_url")"
-  read -r -p '测试模型名：' model
-  [[ -n "$model" ]] || fail '测试模型名不能为空。'
-  read -r -s -p '请输入 APIQIK API Key：' api_key
+  read -r -p 'Test model name: ' model
+  [[ -n "$model" ]] || fail 'Test model name cannot be empty.'
+  read -r -s -p 'Enter the APIQIK API key: ' api_key
   printf '\n'
-  [[ -n "$api_key" ]] || fail 'API Key 不能为空。'
+  [[ -n "$api_key" ]] || fail 'API key cannot be empty.'
 
   APIQIK_SETUP_KEY="$api_key" python3 - "$base_url" "$model" <<'PY'
 import json
@@ -141,38 +141,38 @@ request = urllib.request.Request(
 try:
     with urllib.request.urlopen(request, timeout=30) as response:
         if not 200 <= response.status < 300:
-            raise SystemExit(f"网关返回 HTTP {response.status}")
+            raise SystemExit(f"Gateway returned HTTP {response.status}")
 except urllib.error.HTTPError as error:
-    raise SystemExit(f"网关返回 HTTP {error.code}，请检查 API Key、模型名和额度")
+    raise SystemExit(f"Gateway returned HTTP {error.code}; check the API key, model name, and quota")
 except urllib.error.URLError as error:
-    raise SystemExit(f"无法连接网关：{error.reason}")
+    raise SystemExit(f"Unable to connect to the gateway: {error.reason}")
 PY
   unset api_key
-  log '连接测试通过。'
+  log 'Connection test passed.'
 }
 
 restore_settings() {
-  [[ -d "$BACKUP_DIR" ]] || fail '没有找到 APIQIK 配置备份。'
+  [[ -d "$BACKUP_DIR" ]] || fail 'No APIQIK configuration backup was found.'
 
   local latest
   latest="$(find "$BACKUP_DIR" -maxdepth 1 -type f -name 'settings.json.*' -print | sort | tail -n 1)"
-  [[ -n "$latest" ]] || fail '没有找到 APIQIK 配置备份。'
+  [[ -n "$latest" ]] || fail 'No APIQIK configuration backup was found.'
 
   cp "$latest" "$SETTINGS_FILE"
   chmod 600 "$SETTINGS_FILE"
-  log "已恢复配置：$latest"
+  log "Configuration restored: $latest"
 }
 
 configure() {
   local base_url model
-  read -r -p 'APIQIK Base URL：' base_url
-  [[ -n "$base_url" ]] || fail 'Base URL 不能为空。'
+  read -r -p 'APIQIK Base URL: ' base_url
+  [[ -n "$base_url" ]] || fail 'Base URL cannot be empty.'
   base_url="$(normalize_base_url "$base_url")"
 
-  read -r -p '模型名（可留空，保留 Claude Code 默认模型）：' model
+  read -r -p 'Model name (leave empty to keep the Claude Code default): ' model
   write_settings "$base_url" "$model"
 
-  log '请重启 Claude Code，然后运行 /status 检查 Anthropic base URL 和 Auth token。'
+  log 'Restart Claude Code, then run /status to check the Anthropic base URL and auth token.'
 }
 
 main() {
@@ -180,12 +180,12 @@ main() {
   mkdir -p "$CLAUDE_DIR"
 
   while true; do
-    printf '\nAPIQIK Claude Code 配置器\n'
-    printf '  1. 配置或更新 APIQIK\n'
-    printf '  2. 测试 APIQIK 连接\n'
-    printf '  9. 恢复最近一次配置备份\n'
-    printf '  0. 退出\n\n'
-    read -r -p '请选择操作 [1]：' action
+    printf '\nAPIQIK Claude Code configurator\n'
+    printf '  1. Configure or update APIQIK\n'
+    printf '  2. Test APIQIK connection\n'
+    printf '  9. Restore the latest configuration backup\n'
+    printf '  0. Exit\n\n'
+    read -r -p 'Select an operation [1]: ' action
     action="${action:-1}"
 
     case "$action" in
@@ -193,7 +193,7 @@ main() {
       2) test_connection; return 0 ;;
       9) restore_settings; return 0 ;;
       0) return 0 ;;
-      *) log '无效选项，请重新选择。' ;;
+      *) log 'Invalid option. Please try again.' ;;
     esac
   done
 }

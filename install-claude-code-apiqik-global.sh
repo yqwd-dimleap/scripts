@@ -18,7 +18,7 @@ run_setup() {
   temporary_script="$(mktemp "${TMPDIR:-/tmp}/apiqik-setup.XXXXXX")"
   if ! curl -fsSL --output "$temporary_script" "$SETUP_SCRIPT_URL"; then
     rm -f "$temporary_script"
-    printf '[APIQIK] 错误：无法下载配置脚本：%s\n' "$SETUP_SCRIPT_URL" >&2
+    printf '[APIQIK] Error: failed to download the setup script: %s\n' "$SETUP_SCRIPT_URL" >&2
     return 1
   fi
 

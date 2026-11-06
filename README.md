@@ -1,10 +1,10 @@
-# APIQIK Claude Code 安装脚本
+# APIQIK Claude Code Setup Scripts
 
-这组脚本用于为 Claude Code 配置 APIQIK Anthropic 兼容网关。
+These scripts configure the APIQIK Anthropic-compatible gateway for Claude Code.
 
-## 一键运行
+## One-click installation
 
-国内站：
+China endpoint:
 
 ```bash
 (
@@ -16,7 +16,7 @@
 )
 ```
 
-海外站：
+Global endpoint:
 
 ```bash
 (
@@ -28,39 +28,39 @@
 )
 ```
 
-命令会先下载脚本，确认下载成功后才执行；下载失败时会返回非零状态。
+The command downloads the script before execution and returns a non-zero status if the download fails.
 
-脚本会要求用户填写 APIQIK Base URL，不再预设服务地址。
+The script prompts for an APIQIK Base URL and does not use a predefined service address.
 
-脚本会自动将请求发送到对应地址的 `/v1/messages`。
+Requests are sent to the `/v1/messages` path of the configured endpoint.
 
-## 配置流程
+## Configuration flow
 
-1. 选择 `1. 配置或更新 APIQIK`。
-2. 输入 APIQIK Base URL。
-3. 输入模型名；留空则保留 Claude Code 默认模型。
-4. 交互式输入 API Key。
-5. 重启 Claude Code 后执行 `/status` 检查配置。
+1. Select `1. Configure or update APIQIK`.
+2. Enter the APIQIK Base URL.
+3. Enter the model name; leave it empty to keep the Claude Code default model.
+4. Enter the API key when prompted.
+5. Restart Claude Code and run `/status` to verify the configuration.
 
-配置文件为 `~/.claude/settings.json`。已有文件会先备份到
-`~/.claude/backup-apiqik/`，脚本只修改 `env` 节点，不覆盖其他配置。
+The configuration file is `~/.claude/settings.json`. Existing files are backed up to
+`~/.claude/backup-apiqik/`; the script only updates the `env` node and preserves other settings.
 
-## 测试环境
+## Test environment
 
-测试连接时同样需要在交互提示中填写对应的 Base URL。
+Enter the appropriate Base URL when testing a connection.
 
-## 本地运行
+## Local usage
 
-克隆仓库后，可以直接运行任一入口脚本。入口脚本会优先调用同目录下的共享实现，不依赖网络下载：
+After cloning the repository, run either entry script directly. The entry scripts prefer the shared implementation in the same directory and do not require a network download:
 
 ```bash
 ./install-claude-code-apiqik-cn.sh
 ./install-claude-code-apiqik-global.sh
 ```
 
-## 安全说明
+## Security notes
 
-- 仓库不包含 API Key、个人身份信息、日志、配置备份或测试凭证。
-- API Key 只通过隐藏输入读取，不放入 URL、命令行参数或日志。
-- API Key 仅写入本机 `settings.json`，文件权限设置为 `600`。
-- 测试地址由用户交互输入，发布脚本不绑定内部环境。
+- The repository does not contain API keys, personal information, logs, configuration backups, or test credentials.
+- API keys are read without echoing them and are never placed in URLs, command-line arguments, or logs.
+- API keys are written only to the local `settings.json`, which is assigned `600` permissions.
+- Test endpoints are entered interactively; the published scripts do not bind to an internal environment.
