@@ -10,7 +10,7 @@ run_setup() {
   fi
 
   if [[ -n "$script_dir" && -f "$script_dir/claude-code-apiqik-setup.sh" ]]; then
-    bash "$script_dir/claude-code-apiqik-setup.sh"
+    bash "$script_dir/claude-code-apiqik-setup.sh" --locale zh-CN
     return
   fi
 
@@ -22,7 +22,7 @@ run_setup() {
     return 1
   fi
 
-  if bash "$temporary_script"; then
+  if bash "$temporary_script" --locale zh-CN; then
     status=0
   else
     status=$?

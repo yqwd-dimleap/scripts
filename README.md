@@ -30,6 +30,8 @@ Global endpoint:
 
 The command downloads the script before execution and returns a non-zero status if the download fails.
 
+The China entry script uses Chinese prompts and the global entry script uses English prompts. Both entry scripts share the same configuration implementation.
+
 The script prompts for an APIQIK Base URL and does not use a predefined service address.
 
 Requests are sent to the `/v1/messages` path of the configured endpoint.
